@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            div #result {white-space: pre-wrap ; }
+            input {width:40%;font-size:16px ; }
+        </style>
+    </head>
+    <body>
+        <p>
+            <button id="hoge">接続</button>
+            <button id="fuga">切断</button>
+        </p>
+        <p>
+            <input ud="data" value="SYNCER">
+            <button id="send">送信</button>
+        </p>
+    <hr>
+        <div id="result"></div>
+    <script>
+        var ws = null;
+        var elements1 = document.getElementById("hoge");
+        var elements2 = document.getElementById("fuga");
+        var elements3 = document.getElementById("send");
+
+        element1.onclick=function(){
+            if(ws && ws.readyState === 1)
+            return false;
+
+            ws = new WebSocket({"id":1,"jsonrpc":"2.0","method":"getCortexInfo"});
+            
+            ws.onopen = function(){
+                ws.onmessage = function(){
+                    logUpdate(message.data);
+                }
+                ws.onclose=function(){
+                    logUpdate("切断しました");
+                }
+            }
+        }
+
+        elements2.onclick = function(){
+            if (ws && ws.readyState === 1)
+            ws.close();
+        }
+
+        element3.onclick = function(){
+            ws.send(document.getElementById("data").value);
+        }
+
+        var logUpdate = function(text,noDate){
+            var resultElement = document.getElementById("result");
+            resultElement.textContent = text + (noDate ?"" :"("+new Data().toLocaleString()+")") 
+            +  "\n" + resultElement.textContent;
+        }
+    </script>
+    </body>
+</html>
